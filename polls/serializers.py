@@ -25,11 +25,14 @@ class AnswerQuestionSerializer(serializers.ModelSerializer):
 class UserPollSerializer(serializers.ModelSerializer):
     answers = AnswerQuestionSerializer(many=True)
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict) -> UserPoll:
         answers = validated_data.pop('answers')
         user_poll = UserPoll.objects.create(**validated_data)
+
+        # DRF не умеет сереализовывать nested поля, поэтому надо вручную
         for answer in answers:
-            answer_question = AnswerQuestion.objects.create(question=answer["question"], answer=answer["answer"])
+            answer_question = AnswerQuestion(question=answer['question'], answer=answer['answer'])
+            answer_question.save()
             UserPollAnswer.objects.create(user_poll=user_poll, answer_question=answer_question)
 
         return user_poll
