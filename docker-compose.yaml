@@ -1,0 +1,34 @@
+version: "3.8"
+
+
+x-env: &x-env
+  env_file:
+    - env_file
+
+
+services:
+  polls:
+    build: .
+    restart: always
+    container_name: backend_polls
+    ports:
+      - "8000:8000"
+    entrypoint: ./entrypoint.sh
+    volumes:
+      - ./:/app/
+    depends_on:
+      - postgres
+    <<: *x-env
+
+  postgres:
+    restart: unless-stopped
+    container_name: postgres_polls
+    image: library/postgres:13.2
+    ports:
+      - "15435:5432"
+    volumes:
+      - postgresdata:/var/lib/postgresql/data
+    <<: *x-env
+
+volumes:
+  postgresdata:

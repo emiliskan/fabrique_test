@@ -27,16 +27,21 @@
 - документация по API
 
 # Запуск
+Поднимите докер образы
 
-Чтоб запустить проект надо выполнить миграции
+`` docker compose up --build ``
 
-``` python manage.py makemigrations```
+Перейдите в контейнер джанго
 
-``` python manage.py migrate```
+```docker exec -it backend_polls sh ```
 
-Далее создайте super user 
+И выполните последовательно команды
 
-``` python manage.py createsuperuser```
+``` python manage.py create_superuser ```
+
+``` python manage.py collectstatic ```
+
+``` python manage.py migrate ```
 
 Для входа в админ панель перейдите по ```http://localhost:8000/admin``` и авторизуйтесь администратором
 
