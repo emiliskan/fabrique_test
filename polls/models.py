@@ -1,0 +1,94 @@
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+
+
+class Poll(models.Model):
+    """ Опросы """
+    name = models.CharField(max_length=250)
+    start_date = models.DateField(_("дата начала"), auto_now=True)
+    end_date = models.DateField(_("дата окончания"), null=True, blank=True)
+
+    questions = models.ManyToManyField('Question', through='PoolQuestion')
+
+    def __str__(self):
+        return f'{self.name}'
+
+    class Meta:
+        verbose_name = _('опрос')
+        verbose_name_plural = _('опросы')
+
+
+class AnswerTypes(models.TextChoices):
+    """ Типы ответов для вопросов """
+    text = "TEXT", _('ответ текстом')
+    single_choice = "SINGLE_CHOICE", _('выбор одного варианта')
+    multiply_choice = "MULTIPLY_CHOICE", _('выбор нескольких вариантов')
+
+
+class Question(models.Model):
+    """ Вопросы для опросов """
+    text = models.TextField()
+    answer_type = models.CharField(
+        _("Тип ответа"),
+        max_length=250,
+        choices=AnswerTypes.choices,
+        blank=False,
+        null=False,
+        default=AnswerTypes.text
+    )
+
+    def __str__(self):
+        return f'{self.text}'
+
+    class Meta:
+        verbose_name = _('вопрос')
+        verbose_name_plural = _('вопросы')
+
+
+class PoolQuestion(models.Model):
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.question}'
+
+    class Meta:
+        verbose_name = _('вопрос опроса')
+        verbose_name_plural = _('вопросы опросов')
+
+
+class UserPoll(models.Model):
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
+    user_id = models.IntegerField()
+    answers = models.ManyToManyField('AnswerQuestion', through='UserPollAnswer')
+
+    def __str__(self):
+        return f'{self.user_id}'
+
+    class Meta:
+        verbose_name = _('опрос пользователя')
+        verbose_name_plural = _('опросы пользователей')
+
+
+class AnswerQuestion(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    answer = models.TextField()
+
+    def __str__(self):
+        return f'{self.question} {self.answer}'
+
+    class Meta:
+        verbose_name = _('ответ на вопрос')
+        verbose_name_plural = _('ответы на вопросы')
+
+
+class UserPollAnswer(models.Model):
+    answer_question = models.ForeignKey(AnswerQuestion, on_delete=models.CASCADE)
+    user_poll = models.ForeignKey(UserPoll, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.answer_question}'
+
+    class Meta:
+        verbose_name = _('ответ на вопрос опроса')
+        verbose_name_plural = _('ответы на вопросы опросов')
