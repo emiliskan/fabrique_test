@@ -26,6 +26,7 @@ class UserPollSerializer(serializers.ModelSerializer):
     answers = AnswerQuestionSerializer(many=True)
 
     def create(self, validated_data: dict) -> UserPoll:
+        """ Создание опроса и добавление отетов в него """
         answers = validated_data.pop('answers')
         user_poll = UserPoll.objects.create(**validated_data)
 

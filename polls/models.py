@@ -46,6 +46,7 @@ class Question(models.Model):
 
 
 class PoolQuestion(models.Model):
+    """ Вопросы опроса """
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
@@ -58,6 +59,7 @@ class PoolQuestion(models.Model):
 
 
 class UserPoll(models.Model):
+    """ Опросы пользователей """
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
     user_id = models.IntegerField()
     answers = models.ManyToManyField('AnswerQuestion', through='UserPollAnswer')
@@ -71,6 +73,7 @@ class UserPoll(models.Model):
 
 
 class AnswerQuestion(models.Model):
+    """ Ответы на вопросы """
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     answer = models.TextField()
 
@@ -83,6 +86,7 @@ class AnswerQuestion(models.Model):
 
 
 class UserPollAnswer(models.Model):
+    """ Связка опросов пользователей с ответами на вопросы """
     answer_question = models.ForeignKey(AnswerQuestion, on_delete=models.CASCADE)
     user_poll = models.ForeignKey(UserPoll, on_delete=models.CASCADE)
 
