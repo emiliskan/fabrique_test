@@ -1,6 +1,12 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+ANSWER_TYPES = [
+    ("TEXT", _('ответ текстом')),
+    ("SINGLE_CHOICE", _('выбор одного варианта')),
+    ("MULTIPLY_CHOICE", _('выбор нескольких вариантов'))
+]
+
 
 class Poll(models.Model):
     """ Опросы """
@@ -18,23 +24,15 @@ class Poll(models.Model):
         verbose_name_plural = _('опросы')
 
 
-class AnswerTypes(models.TextChoices):
-    """ Типы ответов для вопросов """
-    text = "TEXT", _('ответ текстом')
-    single_choice = "SINGLE_CHOICE", _('выбор одного варианта')
-    multiply_choice = "MULTIPLY_CHOICE", _('выбор нескольких вариантов')
-
-
 class Question(models.Model):
     """ Вопросы для опросов """
     text = models.TextField()
     answer_type = models.CharField(
         _("Тип ответа"),
         max_length=250,
-        choices=AnswerTypes.choices,
+        choices=ANSWER_TYPES,
         blank=False,
         null=False,
-        default=AnswerTypes.text
     )
 
     def __str__(self):

@@ -2,25 +2,16 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from polls.models import Poll, UserPoll
-from polls.serializers import PollSerializer, UserPollSerializer
-
-
-class PollView(APIView):
-    """ Список опросов """
-    def get(self, request, format=None):
-        polls = Poll.objects.all()
-        serializer = PollSerializer(polls, many=True)
-        return Response(serializer.data)
+from polls.services.user_poll import get_user_pools
+from polls.serializers.user_pool import UserPollSerializer
 
 
 class UserPollsView(APIView):
     """ Опросы пользователя """
-    serializer = UserPollSerializer
 
     def get(self, request, user_id, format=None):
         """ Получить список опросов пользователя """
-        user_polls = UserPoll.objects.filter(user_id__exact=user_id).all()
+        user_polls = get_user_pools(user_id)
         serializer = UserPollSerializer(user_polls, many=True)
         return Response(serializer.data)
 
